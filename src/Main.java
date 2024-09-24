@@ -13,6 +13,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         ProdutoService produtoService = new ProdutoService();
         PedidoService pedidoService = new PedidoService();
+        Pedido pedidoAtual = null; // Inicializa a referência do pedido atual
 
         while (true) {
             System.out.println("Sistema de Gerenciamento de Pedidos");
@@ -20,10 +21,11 @@ public class Main {
             System.out.println("2. Adicionar Produto Usado");
             System.out.println("3. Adicionar Produto Importado");
             System.out.println("4. Listar Produtos");
-            System.out.println("5. Excluir Produto");
-            System.out.println("6. Adicionar Pedido");
-            System.out.println("7. Listar Pedidos");
-            System.out.println("8. Sair");
+            System.out.println("5. Criar Novo Pedido");
+            System.out.println("6. Adicionar Produto ao Pedido");
+            System.out.println("7. Remover Produto do Pedido");
+            System.out.println("8. Listar Pedidos");
+            System.out.println("9. Sair");
             System.out.print("Escolha uma opção: ");
             int opcao = scanner.nextInt();
             scanner.nextLine(); // Consumir nova linha
@@ -57,26 +59,44 @@ public class Main {
                     produtoService.listarProdutos();
                     break;
                 case 5:
-                    System.out.print("ID do Produto a ser excluído: ");
-                    int idExcluir = scanner.nextInt();
-                    if (produtoService.excluirProduto(idExcluir)) {
-                        System.out.println("Produto excluído com sucesso!");
+                    pedidoAtual = new Pedido(); // Inicializa o pedido atual
+                    pedidoService.adicionarPedido(pedidoAtual);
+                    System.out.println("Novo pedido criado com sucesso! ID: " + pedidoAtual.getId());
+                    break;
+                case 6:
+                    if (pedidoAtual == null) {
+                        System.out.println("Nenhum pedido criado. Crie um pedido primeiro.");
+                        break;
+                    }
+                    System.out.print("ID do Produto para adicionar ao Pedido: ");
+                    int produtoIdAdicionar = scanner.nextInt();
+                    Produto produtoParaAdicionar = produtoService.getProdutoById(produtoIdAdicionar);
+                    if (produtoParaAdicionar != null) {
+                        pedidoAtual.adicionarProduto(produtoParaAdicionar);
+                        System.out.println("Produto adicionado ao pedido com sucesso!");
                     } else {
                         System.out.println("Produto não encontrado!");
                     }
                     break;
-                case 6:
-                    System.out.print("ID do Produto: ");
-                    int produtoId = scanner.nextInt();
-                    System.out.print("Quantidade: ");
-                    int quantidade = scanner.nextInt();
-                    pedidoService.adicionarPedido(new Pedido(produtoId, quantidade));
-                    System.out.println("Pedido adicionado com sucesso!");
-                    break;
                 case 7:
-                    pedidoService.listarPedidos();
+                    if (pedidoAtual == null) {
+                        System.out.println("Nenhum pedido criado. Crie um pedido primeiro.");
+                        break;
+                    }
+                    System.out.print("ID do Produto para remover do Pedido: ");
+                    int produtoIdRemover = scanner.nextInt();
+                    Produto produtoParaRemover = produtoService.getProdutoById(produtoIdRemover);
+                    if (produtoParaRemover != null) {
+                        pedidoAtual.removerProduto(produtoParaRemover);
+                        System.out.println("Produto removido do pedido com sucesso!");
+                    } else {
+                        System.out.println("Produto não encontrado!");
+                    }
                     break;
                 case 8:
+                    pedidoService.listarPedidos();
+                    break;
+                case 9:
                     System.out.println("Saindo...");
                     return;
                 default:

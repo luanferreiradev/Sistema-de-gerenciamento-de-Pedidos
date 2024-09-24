@@ -1,35 +1,52 @@
 package models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Pedido {
     private static int contador = 1;
     private int id;
-    private int produtoId;
-    private int quantidade;
+    private List<Produto> produtos = new ArrayList<>();
+    private double valorTotal;
 
-    public Pedido(int produtoId, int quantidade) {
+    public Pedido() {
         this.id = contador++;
-        this.produtoId = produtoId;
-        this.quantidade = quantidade;
+        this.valorTotal = 0.0;
     }
 
     public int getId() {
         return id;
     }
 
-    public int getProdutoId() {
-        return produtoId;
+    public double getValorTotal() {
+        return valorTotal;
     }
 
-    public int getQuantidade() {
-        return quantidade;
+    public void adicionarProduto(Produto produto) {
+        produtos.add(produto);
+        valorTotal += produto.getPreco();
+        aplicarDesconto(); // Atualiza o valor total com desconto se aplicável
+    }
+
+    public void removerProduto(Produto produto) {
+        if (produtos.remove(produto)) {
+            valorTotal -= produto.getPreco();
+            aplicarDesconto(); // Atualiza o valor total com desconto se aplicável
+        }
+    }
+
+    private void aplicarDesconto() {
+        if (valorTotal > 100.0) { // Exemplo: desconto para pedidos acima de R$100
+            valorTotal *= 0.9; // Aplica 10% de desconto
+        }
     }
 
     @Override
     public String toString() {
         return "Pedido{" +
                 "id=" + id +
-                ", produtoId=" + produtoId +
-                ", quantidade=" + quantidade +
+                ", valorTotal=" + valorTotal +
+                ", produtos=" + produtos +
                 '}';
     }
 }
